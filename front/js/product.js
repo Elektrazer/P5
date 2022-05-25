@@ -22,3 +22,35 @@ async function kanap1() {
   }
 }
 kanap1();
+
+const elt6 = document.getElementById("addToCart");
+elt6.addEventListener("click", function () {
+  const quantite = Number(document.getElementById("quantity").value);
+
+  if (!quantite || quantite > 100 || quantite < 1) {
+    return alert("Veuillez choisir une quantité");
+  }
+
+  if (!elt5.value) {
+    return alert("Veuillez sélectionner une couleur");
+  }
+
+  const produitSelectionne = {
+    id: id,
+    couleur: elt5.value,
+    quantite: quantite,
+  };
+
+  const product = JSON.parse(localStorage.getItem("product")) || [];
+  const produitTrouve = product.find(
+    (elt) =>
+      elt.id == produitSelectionne.id &&
+      elt.couleur == produitSelectionne.couleur
+  );
+  if (produitTrouve) {
+    produitTrouve.quantite += produitSelectionne.quantite;
+  } else {
+    product.push(produitSelectionne);
+  }
+  localStorage.setItem("product", JSON.stringify(product));
+});
