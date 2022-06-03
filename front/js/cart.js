@@ -32,7 +32,9 @@ async function kanap1() {
     </article>`;
     }
     kanap2();
+
     // Fonction permettant de changer la quantité depuis la page Panier
+
     const inputs = document.querySelectorAll(".itemQuantity");
     for (const input of inputs) {
       input.addEventListener("change", function (e) {
@@ -54,7 +56,9 @@ async function kanap1() {
         kanap2();
       });
     }
+
     // Fonction permettant de supprimer un article du panier
+
     const elt3 = document.querySelectorAll(".deleteItem");
     for (const supp of elt3) {
       supp.addEventListener("click", function (e) {
@@ -76,7 +80,9 @@ async function kanap1() {
         kanap2();
       });
     }
+
     // Fonction permettant de vérifier les informations clients ainsi que de valider la commande.
+
     const submit = document.getElementById("order");
     submit.addEventListener("click", async function (e) {
       e.preventDefault();
