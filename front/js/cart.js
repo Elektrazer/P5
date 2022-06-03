@@ -76,17 +76,48 @@ async function kanap1() {
         kanap2();
       });
     }
+    // Fonction permettant de vérifier les informations clients ainsi que de valider la commande.
     const submit = document.getElementById("order");
-    submit.addEventListener("click", function (e) {
+    submit.addEventListener("click", async function (e) {
       e.preventDefault();
       const firstName = document.getElementById("firstName").value;
-      validateFirstName();
+      validateFirstName(firstName);
+      const lastName = document.getElementById("lastName").value;
+      validateLastName(lastName);
+      const adress = document.getElementById("address").value;
+      validateAdress(adress);
+      const email = document.getElementById("email").value;
+      validateEmail(email);
+      const contact = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        email: document.getElementById("email").value,
+      };
+      const produitTrouve = JSON.parse(localStorage.getItem("product"));
+      const products = [];
+      for (let kanap of produitTrouve) {
+        products.push(kanap.id);
+      }
+      const response = await fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ products, contact }),
+      });
+      const data = await response.json();
+      location.href = "./confirmation.html?orderid=" + data.orderId;
     });
   } catch {
     elt1.innerHTML = "Error Loading Elements";
   }
 }
 kanap1();
+
+// Fonction permettant de calculer le nombre d'articles ainsi que le prix total du panier.
 
 async function kanap2() {
   try {
@@ -109,12 +140,13 @@ async function kanap2() {
   } catch {}
 }
 
-function validateFirstName(firstName) {
-  const firstNameReg = new RegExp(/[0-9]/);
-  const validFirstName = firstNameReg.test(firstName);
-  console.log(validFirstName);
+// Déclaration des regex pour les champs de saisie clients.
 
-  if (validFirstName == false) {
+function validateFirstName(firstName) {
+  const firstNameReg = new RegExp(/[0-9]/g);
+  const validFirstName = firstNameReg.test(firstName);
+
+  if (validFirstName == true) {
     alert("Prénom invalide");
   }
 }
@@ -129,28 +161,19 @@ function validateLastName(lastName) {
 }
 
 function validateAdress(adress) {
-  const adressReg = new RegExp(/([0-9]{1,}) ?([A-zÀ-ú,' -. ]*)/);
+  const adressReg = new RegExp(/[A-Za-z0-9'\.\-\s\,]/);
   const validAdress = adressReg.test(adress);
 
   if (validAdress == false) {
-    alert("Nom invalide");
+    alert("Adresse invalide");
   }
 }
 
 function validateEmail(email) {
   const emailReg = new RegExp(/^[A-z0-9-_.]{1,}[@][A-z-]{2,}[.][A-z]{2,}$/g);
   const validEmail = emailReg.test(email);
-
+  console.log(validEmail);
   if (validEmail == false) {
-    alert("Nom invalide");
+    alert("E-mail invalide");
   }
 }
-// Détecter un événement positif (incrémentation de la quantité)
-
-// créer une fonction qui permet de modifier l'état du nombre
-// Créer une fonction de l'état de la quantité totale
-
-// Détecter un événement négatif (diminution de la quantité)
-
-// Créer une fonction qui permet de soustraire le nombre
-// Créer une fonction de l'état de la quantité totale
