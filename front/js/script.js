@@ -1,3 +1,4 @@
+// Fonction permettant d'afficher les canapés dynamiquement
 const elt1 = document.getElementById("items");
 async function kanap1() {
   try {
