@@ -40,18 +40,22 @@ async function kanap1() {
       input.addEventListener("change", function (e) {
         const product = JSON.parse(localStorage.getItem("product"));
         const majQuantity = e.target.value;
-        const produitSelectionne = {
-          id: e.target.closest("article").dataset.id,
-          couleur: e.target.closest("article").dataset.color,
-        };
-        const findProduct = product.find(
-          (elt) =>
-            elt.id == produitSelectionne.id &&
-            elt.couleur == produitSelectionne.couleur
-        );
-        if (findProduct) {
-          findProduct.quantite = Number(majQuantity);
-          localStorage.setItem("product", JSON.stringify(product));
+        if (majQuantity > 100 || !majQuantity) {
+          alert("La quantité maximale est dépassé");
+        } else {
+          const produitSelectionne = {
+            id: e.target.closest("article").dataset.id,
+            couleur: e.target.closest("article").dataset.color,
+          };
+          const findProduct = product.find(
+            (elt) =>
+              elt.id == produitSelectionne.id &&
+              elt.couleur == produitSelectionne.couleur
+          );
+          if (findProduct) {
+            findProduct.quantite = Number(majQuantity);
+            localStorage.setItem("product", JSON.stringify(product));
+          }
         }
         kanap2();
       });
@@ -87,35 +91,47 @@ async function kanap1() {
     submit.addEventListener("click", async function (e) {
       e.preventDefault();
       const firstName = document.getElementById("firstName").value;
-      validateFirstName(firstName);
       const lastName = document.getElementById("lastName").value;
-      validateLastName(lastName);
       const adress = document.getElementById("address").value;
-      validateAdress(adress);
       const email = document.getElementById("email").value;
-      validateEmail(email);
-      const contact = {
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("lastName").value,
-        address: document.getElementById("address").value,
-        city: document.getElementById("city").value,
-        email: document.getElementById("email").value,
-      };
-      const produitTrouve = JSON.parse(localStorage.getItem("product"));
-      const products = [];
-      for (let kanap of produitTrouve) {
-        products.push(kanap.id);
+      if (
+        validateFirstName(firstName) == false ||
+        validateLastName(lastName) == false ||
+        validateAdress(adress) == false ||
+        validateEmail(email) == false
+      ) {
+        return alert("Veuillez remplir vos informations");
+      } else {
+        const contact = {
+          firstName: document.getElementById("firstName").value,
+          lastName: document.getElementById("lastName").value,
+          address: document.getElementById("address").value,
+          city: document.getElementById("city").value,
+          email: document.getElementById("email").value,
+        };
+        const produitTrouve = JSON.parse(localStorage.getItem("product"));
+        if (produitTrouve.length == 0) {
+          return alert("Votre panier est vide");
+        } else {
+          const products = [];
+          for (let kanap of produitTrouve) {
+            products.push(kanap.id);
+          }
+          const response = await fetch(
+            "http://localhost:3000/api/products/order",
+            {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ products, contact }),
+            }
+          );
+          const data = await response.json();
+          location.href = "./confirmation.html?orderid=" + data.orderId;
+        }
       }
-      const response = await fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ products, contact }),
-      });
-      const data = await response.json();
-      location.href = "./confirmation.html?orderid=" + data.orderId;
     });
   } catch {
     elt1.innerHTML = "Error Loading Elements";
@@ -154,7 +170,9 @@ function validateFirstName(firstName) {
 
   if (validFirstName == true) {
     alert("Prénom invalide");
+    return false;
   }
+  return true;
 }
 
 function validateLastName(lastName) {
@@ -163,7 +181,9 @@ function validateLastName(lastName) {
 
   if (validLastName == false) {
     alert("Nom invalide");
+    return false;
   }
+  return true;
 }
 
 function validateAdress(adress) {
@@ -172,7 +192,9 @@ function validateAdress(adress) {
 
   if (validAdress == false) {
     alert("Adresse invalide");
+    return false;
   }
+  return true;
 }
 
 function validateEmail(email) {
@@ -181,5 +203,7 @@ function validateEmail(email) {
   console.log(validEmail);
   if (validEmail == false) {
     alert("E-mail invalide");
+    return false;
   }
+  return true;
 }

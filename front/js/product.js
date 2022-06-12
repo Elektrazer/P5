@@ -29,28 +29,38 @@ elt6.addEventListener("click", function () {
 
   if (!quantite || quantite > 100 || quantite < 1) {
     return alert("Veuillez choisir une quantité");
-  }
-
-  if (!elt5.value) {
+  } else if (!elt5.value) {
     return alert("Veuillez sélectionner une couleur");
-  }
-
-  const produitSelectionne = {
-    id: id,
-    couleur: elt5.value,
-    quantite: quantite,
-  };
-
-  const product = JSON.parse(localStorage.getItem("product")) || [];
-  const produitTrouve = product.find(
-    (elt) =>
-      elt.id == produitSelectionne.id &&
-      elt.couleur == produitSelectionne.couleur
-  );
-  if (produitTrouve) {
-    produitTrouve.quantite += produitSelectionne.quantite;
   } else {
-    product.push(produitSelectionne);
+    const produitSelectionne = {
+      id: id,
+      couleur: elt5.value,
+      quantite: quantite,
+    };
+
+    const product = JSON.parse(localStorage.getItem("product")) || [];
+    const produitTrouve = product.find(
+      (elt) =>
+        elt.id == produitSelectionne.id &&
+        elt.couleur == produitSelectionne.couleur
+    );
+    if (produitTrouve) {
+      produitTrouve.quantite += produitSelectionne.quantite;
+    } else {
+      product.push(produitSelectionne);
+    }
+    localStorage.setItem("product", JSON.stringify(product));
+    popUp();
   }
-  localStorage.setItem("product", JSON.stringify(product));
 });
+
+function popUp() {
+  if (
+    window.confirm(`Un objet a bien été ajouté au panier
+  Si vous voulez consulter le panier appuyer sur OK ou vous voulez revenir à l'accueil appuyer sur ANNULER`)
+  ) {
+    window.location.href = "cart.html";
+  } else {
+    window.location.href = "index.html";
+  }
+}
